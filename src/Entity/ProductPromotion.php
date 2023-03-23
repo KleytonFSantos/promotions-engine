@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ProductPromotionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: ProductPromotionRepository::class)]
 class ProductPromotion
@@ -20,6 +21,7 @@ class ProductPromotion
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Ignore]
     private ?Promotion $promotion = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
@@ -54,9 +56,9 @@ class ProductPromotion
         return $this;
     }
 
-    public function getValidTo(): ?\DateTimeInterface
+    public function getValidTo(): ?string
     {
-        return $this->validTo;
+        return $this->validTo?->format('d-m-Y');
     }
 
     public function setValidTo(?\DateTimeInterface $validTo): self

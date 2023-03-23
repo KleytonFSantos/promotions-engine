@@ -35,6 +35,16 @@ class PromotionRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findPromotionByProduct(Product $product): array
+    {
+        return $this->createQueryBuilder('p')
+            ->innerJoin('p.productPromotions', 'pp')
+            ->andWhere('pp.product = :product')
+            ->setParameter('product', $product)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function save(Promotion $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);

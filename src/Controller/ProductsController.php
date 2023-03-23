@@ -3,9 +3,13 @@
 namespace App\Controller;
 
 use App\DTO\LowestPriceEnquiry;
+use App\Entity\Product;
+use App\Entity\ProductPromotion;
 use App\Entity\Promotion;
 use App\Filter\PromotionsFilterInterface;
+use App\Repository\ProductPromotionRepository;
 use App\Repository\ProductRepository;
+use App\Repository\PromotionRepository;
 use App\Services\Serializer\DTOSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,8 +21,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class ProductsController extends AbstractController
 {
     public function __construct(
-        private ProductRepository $productRepository,
-        private EntityManagerInterface $entityManager
+        readonly private ProductRepository $productRepository,
+        readonly private PromotionRepository $promotionRepository,
+        readonly private EntityManagerInterface $entityManager
     ) {
     }
 
@@ -59,8 +64,24 @@ class ProductsController extends AbstractController
         return new Response($responseContent, 200, ['Content-Type' => 'application/json']);
     }
 
+    /**
+     * @param DTOSerializer $serializer
+     * @param int $id
+     * @return Response
+     */
     #[Route('products/{id}/promotions', name: 'promotions', methods: 'GET')]
-    public function promotions()
+    public function promotions(DTOSerializer $serializer,int $id): Response
     {
+        /** @var Product $product */
+        $product = $this->productRepository->find($id);
+        $promotionForProduct = $this->entityManager->getRepository(Promotion::class)
+            ->findPromotionByProduct($product);
+        /** @var Promotion $responseContent */
+        $responseContent = $serializer->serialize($promotionForProduct, 'json');;
+
+        return new Response(
+            $responseContent,
+        200
+        );
     }
 }
