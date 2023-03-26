@@ -4,12 +4,9 @@ namespace App\Controller;
 
 use App\DTO\LowestPriceEnquiry;
 use App\Entity\Product;
-use App\Entity\ProductPromotion;
 use App\Entity\Promotion;
 use App\Filter\PromotionsFilterInterface;
-use App\Repository\ProductPromotionRepository;
 use App\Repository\ProductRepository;
-use App\Repository\PromotionRepository;
 use App\Services\Serializer\DTOSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +19,6 @@ class ProductsController extends AbstractController
 {
     public function __construct(
         readonly private ProductRepository $productRepository,
-        readonly private PromotionRepository $promotionRepository,
         readonly private EntityManagerInterface $entityManager
     ) {
     }
@@ -74,14 +70,16 @@ class ProductsController extends AbstractController
     {
         /** @var Product $product */
         $product = $this->productRepository->find($id);
+
         $promotionForProduct = $this->entityManager->getRepository(Promotion::class)
             ->findPromotionByProduct($product);
-        /** @var Promotion $responseContent */
-        $responseContent = $serializer->serialize($promotionForProduct, 'json');;
+
+        $responseContent = $serializer->serialize($promotionForProduct, 'json');
 
         return new Response(
             $responseContent,
-        200
+        200,
+            ['Content-Type' => 'application/json']
         );
     }
 }
