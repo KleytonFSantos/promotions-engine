@@ -4,9 +4,13 @@ namespace App\Controller;
 
 use App\DTO\LowestPriceEnquiry;
 use App\Entity\Product;
+use App\Entity\ProductPromotion;
 use App\Entity\Promotion;
 use App\Filter\PromotionsFilterInterface;
+use App\Repository\ProductPromotionRepository;
 use App\Repository\ProductRepository;
+use App\Repository\PromotionRepository;
+use App\Services\CreatePromotionsService;
 use App\Services\Serializer\DTOSerializer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +23,7 @@ class ProductsController extends AbstractController
 {
     public function __construct(
         readonly private ProductRepository $productRepository,
+        readonly private PromotionRepository $promotionRepository,
         readonly private EntityManagerInterface $entityManager
     ) {
     }
@@ -81,5 +86,22 @@ class ProductsController extends AbstractController
         200,
             ['Content-Type' => 'application/json']
         );
+    }
+    #[Route('products/{id}/create-promotions', name: 'create-promotions', methods: 'POST')]
+    public function createPromotion(int $id, Request $request, DTOSerializer $serializer, CreatePromotionsService $createPromotionsService): Response {
+        $promotion = $serializer->deserialize(
+            $request->getContent(),
+            Promotion::class,
+            'json'
+        );
+        try {
+            $createPromotionsService->handle($promotion, $id);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Failed to create promotion'], 500);
+        }
+
+        $responseContent = $serializer->serialize($promotion, 'json');
+
+        return new Response($responseContent, 200, ['Content-Type' => 'application/json']);
     }
 }
