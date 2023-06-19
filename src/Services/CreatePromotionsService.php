@@ -14,10 +14,9 @@ class CreatePromotionsService
         private readonly ProductPromotionRepository $productPromotionRepository,
         private readonly PromotionRepository $promotionRepository,
         private readonly ProductRepository $productRepository
-    )
-    {
-
+    ) {
     }
+
     public function handle(Promotion $promotion, int $id): void
     {
         $this->promotionRepository->save($promotion, true);

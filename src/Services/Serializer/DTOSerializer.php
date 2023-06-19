@@ -13,7 +13,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 
 class DTOSerializer implements SerializerInterface
 {
-
     private SerializerInterface $serializer;
 
     public function __construct()
@@ -22,7 +21,7 @@ class DTOSerializer implements SerializerInterface
             [new ObjectNormalizer(
                 classMetadataFactory: new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader())),
                 nameConverter: new CamelCaseToSnakeCaseNameConverter()
-                )
+            ),
             ],
             [new JsonEncoder()]
         );

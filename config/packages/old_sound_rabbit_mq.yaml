@@ -1,0 +1,23 @@
+old_sound_rabbit_mq:
+    connections:
+        default:
+            url: '%env(RABBITMQ_URL)%'
+    producers:
+        # use 'old_sound_rabbit_mq.task_producer' service to send data.
+        promotions_queue:
+            connection:            default
+            exchange_options:      {name: 'promotions_queue', type: direct}
+            queue_options:         {name: 'promotions_queue', routing_key: 'promotions_queue'}
+            service_alias:         'producer.promotions.queue' # no alias by default
+
+
+    consumers:
+        promotions_queue:
+            connection:       default
+            exchange_options: { name: 'promotions_queue', type: direct }
+            queue_options:    {name: 'promotions_queue', routing_key: 'promotions_queue'}
+            callback:         App\Consumer\PromotionQueueConsumer
+            enable_logger: true
+            graceful_max_execution:
+                timeout: 1800 # 30 minutes
+                exit_code: 10 # default is 0

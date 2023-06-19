@@ -14,7 +14,7 @@ class Promotion
     {
         $this->productPromotions = new ArrayCollection();
     }
-    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -88,7 +88,7 @@ class Promotion
         return $this;
     }
 
-        /**
+    /**
      * @return Collection<int, ProductPromotion>
      */
     public function getProductPromotions(): Collection

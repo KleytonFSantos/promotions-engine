@@ -77,3 +77,7 @@
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,symfony
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###

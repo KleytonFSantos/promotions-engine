@@ -8,7 +8,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<ProductPromotion>28\",\"from\":\"2022-11-25"}'), (2, 200);
- 
  *
  * @method ProductPromotion|null find($id, $lockMode = null, $lockVersion = null)
  * @method ProductPromotion|null findOneBy(array $criteria, array $orderBy = null)
@@ -39,29 +38,4 @@ class ProductPromotionRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-
-//    /**
-//     * @return ProductPromotion[] Returns an array of ProductPromotion objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?ProductPromotion
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }
