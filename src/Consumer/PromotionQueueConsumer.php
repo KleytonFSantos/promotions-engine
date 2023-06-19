@@ -10,8 +10,8 @@ class PromotionQueueConsumer
     {
     }
 
-    public function execute(AMQPMessage $message): void
+    public function execute(AMQPMessage $message): mixed
     {
-        dd(json_decode($message->getBody(), true)['id']);
+        return json_decode($message->getBody(), true)['id'];
     }
 }

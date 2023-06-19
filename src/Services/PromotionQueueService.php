@@ -14,10 +14,6 @@ class PromotionQueueService
 
     public function send(int $id): void
     {
-        try {
-            $this->producer->publish(json_encode(['id' => $id]), self::PROMOTION_QUEUE_ROUNTING_KEY);
-        } catch (\Exception $e) {
-            dd($e);
-        }
+        $this->producer->publish(json_encode(['id' => $id]), self::PROMOTION_QUEUE_ROUNTING_KEY);
     }
 }
