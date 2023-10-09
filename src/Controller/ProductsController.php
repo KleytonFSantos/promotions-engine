@@ -8,6 +8,7 @@ use App\Entity\Promotion;
 use App\Filter\PromotionsFilterInterface;
 use App\Repository\ProductRepository;
 use App\Services\CreatePromotionsService;
+use App\Services\NewQueueService;
 use App\Services\PromotionQueueService;
 use App\Services\Serializer\DTOSerializer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,7 @@ class ProductsController extends AbstractController
     public function __construct(
         readonly private ProductRepository $productRepository,
         readonly private PromotionQueueService $promotionQueueService,
+        readonly private NewQueueService $newQueueService,
         readonly private EntityManagerInterface $entityManager
     ) {
     }
@@ -32,7 +34,7 @@ class ProductsController extends AbstractController
         Request $request,
         DTOSerializer $serializer,
         PromotionsFilterInterface $promotionFilter
-    ): Response {
+    ): JsonResponse {
         if ($request->headers->has('force-fail')) {
             return new JsonResponse([
                 'error' => 'The requested engine was failure message.',
@@ -59,32 +61,40 @@ class ProductsController extends AbstractController
 
         $responseContent = $serializer->serialize($modifiedEnquiry, 'json');
 
-        return new Response($responseContent, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse(
+            $responseContent,
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 
     #[Route('products/{id}/promotions', name: 'promotions', methods: 'GET')]
-    public function promotions(DTOSerializer $serializer, int $id): Response
+    public function promotions(DTOSerializer $serializer, Product $product): JsonResponse
     {
-        /** @var Product $product */
-        $product = $this->productRepository->find($id);
-
-        $this->promotionQueueService->send($id);
+        $this->newQueueService->send($product->getPrice());
+        $this->promotionQueueService->send($product->getId());
 
         $promotionForProduct = $this->entityManager->getRepository(Promotion::class)
             ->findPromotionByProduct($product);
 
         $responseContent = $serializer->serialize($promotionForProduct, 'json');
 
-        return new Response(
+        return new JsonResponse(
             $responseContent,
-            200,
-            ['Content-Type' => 'application/json']
+            Response::HTTP_OK,
+            [],
+            true
         );
     }
 
     #[Route('products/{id}/create-promotions', name: 'create-promotions', methods: 'POST')]
-    public function createPromotion(int $id, Request $request, DTOSerializer $serializer, CreatePromotionsService $createPromotionsService): Response
-    {
+    public function createPromotion(
+        int $id,
+        Request $request,
+        DTOSerializer $serializer,
+        CreatePromotionsService $createPromotionsService
+    ): JsonResponse {
         $promotion = $serializer->deserialize(
             $request->getContent(),
             Promotion::class,
@@ -98,6 +108,11 @@ class ProductsController extends AbstractController
 
         $responseContent = $serializer->serialize($promotion, 'json');
 
-        return new Response($responseContent, 200, ['Content-Type' => 'application/json']);
+        return new JsonResponse(
+            $responseContent,
+            Response::HTTP_OK,
+            [],
+            true
+        );
     }
 }

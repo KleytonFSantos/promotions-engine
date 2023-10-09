@@ -23,3 +23,7 @@ services:
     OldSound\RabbitMqBundle\RabbitMq\ProducerInterface: '@old_sound_rabbit_mq.promotions_queue_producer'
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Services\NewQueueService: # Nome do serviço
+        class: App\Services\NewQueueService # Classe do seu producer
+        arguments:
+            - '@old_sound_rabbit_mq.new_queue_producer' # Injeta o producer antigo como uma dependência
